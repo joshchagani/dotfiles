@@ -89,6 +89,15 @@ lazy.setup({
 	{ "nvim-telescope/telescope.nvim", branch = "0.1.x", dependencies = { { "nvim-lua/plenary.nvim" } } },
 	"jayp0521/mason-null-ls.nvim",
 	"tpope/vim-sleuth",
+	{
+		"Equilibris/nx.nvim",
+		depedencies = { { "nvim-telescope/telescope.nvim" } },
+		config = function()
+			require("nx").setup({
+				nx_cmd = "pnpm exec nx",
+			})
+		end,
+	},
 })
 
 -- Start LSP server

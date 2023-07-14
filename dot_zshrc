@@ -1,0 +1,31 @@
+alias brewup='brew update; brew upgrade; brew cleanup; brew doctor'
+alias hosts='sudo vim /etc/hosts'
+alias zshell='sudo vim ~/.zshrc'
+alias apps='cd ~/Apps && ls'
+alias vim="nvim"
+
+# GIT shortcuts
+alias gpull='git pull'
+alias gpush='git push'
+alias grebase='git pull --rebase'
+alias gs='git status'
+alias gc='git commit'
+alias ga='git add'
+alias gaa='git add .'
+alias gbranch='git branch'
+alias gcheck='git checkout'
+alias gcherry='git cherry-pick'
+
+# npm shortcuts
+alias nstart='npm start'
+alias nbuild='npm build'
+alias nr='npm run'
+alias ni='npm i'
+alias ndev='npm i -D'
+alias ngl='npm i -g'
+alias nnx='npx nx'
+
+# shell cmd customization
+export PS1="🎮 /%2~: "
+
+[ "$TERM" = "xterm-kitty" ] && alias ssh="kitty +kitten ssh"

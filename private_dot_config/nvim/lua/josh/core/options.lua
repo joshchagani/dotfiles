@@ -14,11 +14,11 @@ opt.nu = true
 opt.expandtab = true -- expand tab to spaces
 opt.autoindent = true -- copy indent from current line when starting new one
 opt.smartindent = true
-opt.softtabstop = 4
-opt.shiftwidth = 4
+opt.softtabstop = 2
+opt.shiftwidth = 2
 
 -- line wrapping
-opt.wrap = false
+opt.wrap = true
 
 -- spelling
 opt.spell = true
