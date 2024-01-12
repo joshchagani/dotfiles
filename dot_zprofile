@@ -1,0 +1,3 @@
+eval "$(/usr/local/bin/brew shellenv)"
+eval "$(/usr/local/bin/rtx activate zsh)"
+eval "$(starship init zsh)"

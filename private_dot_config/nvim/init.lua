@@ -1,1 +1,2 @@
-require("josh")
+require("josh.core")
+require("josh.lazy")

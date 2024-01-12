@@ -5,15 +5,6 @@ vim.keymap.set({ "n", "v" }, "<Space>", "<Nop>", { silent = true })
 vim.keymap.set("n", "k", "v:count == 0 ? 'gk' : 'k'", { expr = true, silent = true })
 vim.keymap.set("n", "j", "v:count == 0 ? 'gj' : 'j'", { expr = true, silent = true })
 
--- Vim explorer
-vim.keymap.set("n", "<Leader>.", "<cmd>Ex<CR>")
-
--- Telescope shortcuts
-vim.keymap.set("n", "<Leader>ff", "<cmd>lua require('telescope.builtin').find_files()<CR>")
-vim.keymap.set("n", "<Leader>fg", "<cmd>lua require('telescope.builtin').live_grep()<CR>")
-vim.keymap.set("n", "<Leader>fb", "<cmd>lua require('telescope.builtin').buffers()<CR>")
-vim.keymap.set("n", "<Leader>fh", "<cmd>lua require('telescope.builtin').help_tags()<CR>")
-
 -- Enable moving code lines up and down
 vim.keymap.set("n", "<A-j>", "<cmd>m .+1<CR>==")
 vim.keymap.set("n", "<A-k>", "<cmd>m .-2<CR>==")
