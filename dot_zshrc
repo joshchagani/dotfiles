@@ -1,9 +1,70 @@
-# shell cmd customization
-export PS1="🎮 /%2~: "
+# OPENSPEC:START
+# OpenSpec shell completions configuration
+fpath=("/Users/josh/.zsh/completions" $fpath)
+autoload -Uz compinit
+compinit
+# OPENSPEC:END
 
-[ "$TERM" = "xterm-kitty" ] && alias ssh="kitty +kitten ssh"
+# Homebrew environment (PATH, MANPATH, HOMEBREW_*). Lives here, not .zprofile,
+# so it loads for all interactive shells -- including non-login ones where
+# .zprofile is skipped and .zshrc's own `$(brew --prefix)` use would break.
+eval "$(/opt/homebrew/bin/brew shellenv zsh)"
 
-eval "$(/usr/local/bin/brew shellenv)"
-eval "$(/Users/jish/.local/bin/mise activate zsh)"
-eval "$(starship init zsh)"
+eval "$(/Users/josh/.local/bin/mise activate zsh)"
+source "$HOMEBREW_PREFIX/opt/spaceship/spaceship.zsh"
+
+. "$HOME/.local/share/../bin/env"
+
+if command -v wt >/dev/null 2>&1; then eval "$(command wt config shell init zsh)"; fi
+
+# Interactive-shell completions: must run after compinit (above), so they live
+# here in .zshrc, not .zprofile (.zprofile is sourced before .zshrc on login
+# shells, before compdef exists).
+eval "$(git-spice shell completion zsh)"
+eval "$(zoxide init zsh)"
+
+# fzf: key bindings (Ctrl-T files, Ctrl-R history, Alt-C cd) + completion.
+# fd is the engine -- fast and .gitignore-aware; bat renders the preview.
+source <(fzf --zsh)
+export FZF_DEFAULT_COMMAND='fd --type f --hidden --follow --exclude .git'
+export FZF_CTRL_T_COMMAND="$FZF_DEFAULT_COMMAND"
+export FZF_ALT_C_COMMAND='fd --type d --hidden --follow --exclude .git'
+export FZF_DEFAULT_OPTS="--height 40% --layout=reverse --border"
+export FZF_CTRL_T_OPTS="--preview 'bat --color=always --style=numbers --line-range :200 {}'"
+
+# yazi: `y` launches yazi and cd's the shell to its last directory on quit.
+function y() {
+  local tmp cwd
+  tmp="$(mktemp -t yazi-cwd.XXXXXX)"
+  yazi "$@" --cwd-file="$tmp"
+  if cwd="$(command cat -- "$tmp")" && [ -n "$cwd" ] && [ "$cwd" != "$PWD" ]; then
+    builtin cd -- "$cwd"
+  fi
+  rm -f -- "$tmp"
+}
+
+# pnpm global bin (mise manages pnpm itself; this dir holds globally-linked CLIs)
+export PNPM_HOME="$HOME/Library/pnpm"
+case ":$PATH:" in
+  *":$PNPM_HOME/bin:"*) ;;
+  *) export PATH="$PNPM_HOME/bin:$PATH" ;;
+esac
+# pnpm end
+
+# Git + misc aliases. In .zshrc (not .zprofile) so every interactive shell
+# defines them -- aliases are shell-local and not inherited by child shells.
+alias gstat="git status"
+alias ga="git add"
+alias gaa="git add ."
+alias gc="git commit"
+alias gpull="git pull"
+alias gpush="git push"
+alias glog="git log --oneline"
+alias gcheck="git checkout"
+alias gbranch="git branch"
+alias p="npm"
+alias claudeb="claude --permission-mode bypassPermissions --allow-dangerously-skip-permissions"
+
+# zsh-autosuggestions: sourced last so it can wrap ZLE widgets defined above.
+source "$HOMEBREW_PREFIX/share/zsh-autosuggestions/zsh-autosuggestions.zsh"
 

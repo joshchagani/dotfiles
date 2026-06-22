@@ -1,0 +1,3 @@
+{{- $ollamaModel := promptStringOnce . "ollamaModel" "Local LLM model for the prefix+Q popup (qwen3-coder:30b / qwen3.5:9b / none)" "qwen3-coder:30b" -}}
+[data]
+    ollamaModel = {{ $ollamaModel | quote }}

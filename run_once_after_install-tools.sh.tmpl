@@ -1,0 +1,46 @@
+#!/usr/bin/env bash
+# Bootstrap a machine for this setup. chezmoi runs this on `apply` (run_once,
+# after files are placed). Idempotent -- safe to re-run.
+set -euo pipefail
+
+echo "==> Homebrew"
+if ! command -v brew >/dev/null 2>&1; then
+  /bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)"
+fi
+for p in /opt/homebrew/bin/brew /usr/local/bin/brew; do
+  [ -x "$p" ] && eval "$("$p" shellenv)" && break
+done
+
+echo "==> CLI tools (brew)"
+brew install tmux fzf zoxide sesh yazi fd bat helix spaceship mise modem-dev/tap/hunk
+
+echo "==> tmux plugin manager (tpm)"
+[ -d "$HOME/.config/tmux/plugins/tpm" ] || \
+  git clone --depth 1 https://github.com/tmux-plugins/tpm "$HOME/.config/tmux/plugins/tpm"
+
+echo "==> mise-managed tools"
+mise use -g \
+  node pnpm ruff ty rust \
+  github:abhinav/git-spice \
+  npm:typescript-language-server \
+  npm:vscode-langservers-extracted
+
+echo "==> git: hunk as the diff pager"
+git config --global core.pager "hunk pager"
+
+echo "==> hunk review skill for Claude Code"
+mkdir -p "$HOME/.claude/skills"
+ln -sfn "$(brew --prefix)/opt/hunk/libexec/skills/hunk-review" "$HOME/.claude/skills/hunk-review"
+
+{{- if ne .ollamaModel "none" }}
+echo "==> local LLM popup model: {{ .ollamaModel }} (may be a large download)"
+command -v ollama >/dev/null 2>&1 || brew install ollama
+brew services start ollama 2>/dev/null || true
+ollama pull {{ .ollamaModel }}
+ollama create ask-tmux -f "$HOME/.config/ollama/ask-tmux.Modelfile"
+{{- else }}
+echo "==> local LLM popup: skipped (ollamaModel = none)"
+{{- end }}
+
+echo
+echo "==> Done. Open tmux and press 'prefix + I' to install tmux plugins."

@@ -1,0 +1,6 @@
+# ~/.config/sesh/sesh.toml
+# Connecting to any project (prefix+T, then pick a dir) builds the standard
+# workspace layout: an "editor" window (helix | yazi / shell) and a "claude"
+# window. Sessions are named after the directory automatically.
+[default_session]
+startup_command = "{{ .chezmoi.homeDir }}/.config/sesh/layout.sh"

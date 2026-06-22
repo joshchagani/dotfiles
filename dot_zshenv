@@ -1,0 +1,6 @@
+# ~/.zshenv -- sourced for EVERY zsh (login, non-login, interactive, scripts).
+# Home for environment that must always be set, regardless of shell type.
+
+# Default editor (Helix): used by git, yazi, and anything that reads $EDITOR.
+export EDITOR="hx"
+export VISUAL="hx"

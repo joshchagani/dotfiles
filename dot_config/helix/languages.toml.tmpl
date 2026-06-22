@@ -1,0 +1,82 @@
+# ~/.config/helix/languages.toml
+#
+# Matches the nucleus repo's toolchain:
+#   FE format  -> Oxfmt (same engine as `vp fmt`) via oxfmt-stdin.sh
+#   FE lint    -> oxlint --lsp (project-resolved) for live diagnostics; treat
+#                 `vp lint` as the source of truth (rules may differ slightly)
+#   Python     -> ruff (lint + format) with ty for types
+# LSP intelligence: typescript-language-server (FE), vscode-css/json, ty (py).
+
+# ---------- language servers ----------
+[language-server.ruff]
+command = "ruff"
+args = ["server"]
+
+[language-server.oxlint]
+command = "{{ .chezmoi.homeDir }}/.config/helix/oxlint-lsp.sh"
+
+# typescript-language-server, vscode-css-language-server,
+# vscode-json-language-server, and ty resolve by name with Helix's defaults.
+
+# ---------- TypeScript / JavaScript / React ----------
+[[language]]
+name = "typescript"
+auto-format = true
+language-servers = [
+  { name = "typescript-language-server", except-features = ["format"] },
+  "oxlint",
+]
+formatter = { command = "{{ .chezmoi.homeDir }}/.config/helix/oxfmt-stdin.sh", args = ["a.ts"] }
+
+[[language]]
+name = "tsx"
+auto-format = true
+language-servers = [
+  { name = "typescript-language-server", except-features = ["format"] },
+  "oxlint",
+]
+formatter = { command = "{{ .chezmoi.homeDir }}/.config/helix/oxfmt-stdin.sh", args = ["a.tsx"] }
+
+[[language]]
+name = "javascript"
+auto-format = true
+language-servers = [
+  { name = "typescript-language-server", except-features = ["format"] },
+  "oxlint",
+]
+formatter = { command = "{{ .chezmoi.homeDir }}/.config/helix/oxfmt-stdin.sh", args = ["a.js"] }
+
+[[language]]
+name = "jsx"
+auto-format = true
+language-servers = [
+  { name = "typescript-language-server", except-features = ["format"] },
+  "oxlint",
+]
+formatter = { command = "{{ .chezmoi.homeDir }}/.config/helix/oxfmt-stdin.sh", args = ["a.jsx"] }
+
+# ---------- CSS ----------
+[[language]]
+name = "css"
+auto-format = true
+language-servers = [{ name = "vscode-css-language-server", except-features = ["format"] }]
+formatter = { command = "{{ .chezmoi.homeDir }}/.config/helix/oxfmt-stdin.sh", args = ["a.css"] }
+
+[[language]]
+name = "scss"
+auto-format = true
+language-servers = [{ name = "vscode-css-language-server", except-features = ["format"] }]
+formatter = { command = "{{ .chezmoi.homeDir }}/.config/helix/oxfmt-stdin.sh", args = ["a.scss"] }
+
+# ---------- JSON ----------
+[[language]]
+name = "json"
+auto-format = true
+language-servers = [{ name = "vscode-json-language-server", except-features = ["format"] }]
+formatter = { command = "{{ .chezmoi.homeDir }}/.config/helix/oxfmt-stdin.sh", args = ["a.json"] }
+
+# ---------- Python (apps/api: ruff format + lint, ty types) ----------
+[[language]]
+name = "python"
+auto-format = true
+language-servers = ["ty", "ruff"]

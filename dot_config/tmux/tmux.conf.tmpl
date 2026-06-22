@@ -1,0 +1,80 @@
+# ~/.config/tmux/tmux.conf
+# Prefix stays the default Ctrl-b.
+
+# ── Core behavior ────────────────────────────────────────────────────────────
+set -g mouse on                       # click to focus/resize panes, scroll
+set -g history-limit 100000           # deep scrollback so capture-pane reads more
+set -g renumber-windows on            # keep window numbers gapless after closes
+set -g set-clipboard on               # let programs set the system clipboard
+setw -g mode-keys vi                  # vi keys in copy mode
+set -g focus-events on                # Helix gets focus in/out events
+set -g repeat-time 750                # ms window to repeat -r keys (prefix, then h h l...)
+
+# True color + correct $TERM so Helix's theme renders correctly inside tmux
+set -g default-terminal "tmux-256color"
+set -ga terminal-overrides ",*256col*:Tc"
+set -ga terminal-overrides ",xterm-256color:Tc"
+
+# Named windows/panes for the sesh layout: keep our names + show pane titles
+set -g allow-rename off
+set -g automatic-rename off
+set -g pane-border-status top
+set -g pane-border-format " #{pane_index}  #{pane_title} "
+
+# ── Splits / windows inherit the current pane's directory ────────────────────
+bind | split-window -h -c "#{pane_current_path}"
+bind - split-window -v -c "#{pane_current_path}"
+bind c new-window -c "#{pane_current_path}"
+
+# Prefix + h/j/k/l to move between panes (vim-style). -r makes them repeatable
+# within repeat-time, so you can keep nudging panes without re-pressing prefix.
+bind -r h select-pane -L
+bind -r j select-pane -D
+bind -r k select-pane -U
+bind -r l select-pane -R
+
+# Prefix + Shift-HJKL to resize the current pane, 5 cells/press (repeatable).
+# Window switching stays on the defaults: prefix n / p / <number>.
+bind -r H resize-pane -L 5
+bind -r J resize-pane -D 5
+bind -r K resize-pane -U 5
+bind -r L resize-pane -R 5
+
+# Reload config: prefix + r
+bind r source-file ~/.config/tmux/tmux.conf \; display "tmux.conf reloaded"
+
+# Prefix + Q: ephemeral local-LLM popup for quick tmux/Helix questions (Ollama,
+# qwen3.5:9b). Reads your live config each open, so answers match current keys.
+{{- if ne .ollamaModel "none" }}
+bind Q display-popup -w 75% -h 70% -E "{{ .chezmoi.homeDir }}/.config/ollama/ask-tmux.sh"
+{{- end }}
+
+# ── sesh: prefix + T -> fuzzy session picker (tmux sessions + zoxide + configs) ─
+bind-key "T" run-shell "sesh connect \"$(
+  sesh list --icons | fzf-tmux -p 80%,70% \
+    --no-sort --ansi --border-label ' sesh ' --prompt '⚡  ' \
+    --header '  ^a all ^t tmux ^g configs ^x zoxide ^f find ^d kill' \
+    --bind 'tab:down,btab:up' \
+    --bind 'ctrl-a:change-prompt(⚡  )+reload(sesh list --icons)' \
+    --bind 'ctrl-t:change-prompt(🪟  )+reload(sesh list -t --icons)' \
+    --bind 'ctrl-g:change-prompt(⚙️  )+reload(sesh list -c --icons)' \
+    --bind 'ctrl-x:change-prompt(📁  )+reload(sesh list -z --icons)' \
+    --bind 'ctrl-f:change-prompt(🔎  )+reload(fd -H -d 2 -t d -E .Trash . ~)' \
+    --bind 'ctrl-d:execute(tmux kill-session -t {2..})+change-prompt(⚡  )+reload(sesh list --icons)' \
+    --preview-window 'right:55%' --preview 'sesh preview {}'
+)\""
+
+# ── Plugins (tpm) ─────────────────────────────────────────────────────────────
+set -g @plugin 'tmux-plugins/tpm'
+set -g @plugin 'tmux-plugins/tmux-sensible'
+set -g @plugin 'tmux-plugins/tmux-resurrect'
+set -g @plugin 'tmux-plugins/tmux-continuum'
+
+# Persist + auto-restore sessions across reboots (incl. reopening Helix)
+set -g @resurrect-capture-pane-contents 'on'
+set -g @resurrect-processes 'hx'
+set -g @continuum-restore 'off'   # sesh builds layouts; don't replay a stale snapshot on start
+set -g @continuum-save-interval '15'
+
+# Keep this as the LAST line
+run '~/.config/tmux/plugins/tpm/tpm'

@@ -1,0 +1,22 @@
+theme = "catppuccin_macchiato"
+
+[editor]
+line-number = "relative"
+bufferline = "always"   # tab bar of open buffers, always visible
+
+[editor.cursor-shape]
+insert = "bar"
+normal = "block"
+select = "underline"
+
+# Ctrl-y: open yazi as a file picker; the chosen file opens in THIS Helix
+# instance (complements the built-in `Space e` tree explorer -- pick whichever).
+# Follows the Helix wiki "Advanced file explorer with Yazi" recipe.
+[keys.normal]
+C-y = [
+  ':sh rm -f /tmp/yazi-helix-chooser',
+  ':insert-output yazi "%{buffer_name}" --chooser-file=/tmp/yazi-helix-chooser',
+  ':sh printf "\x1b[?1049h\x1b[?2004h" > /dev/tty',
+  ':open %sh{cat /tmp/yazi-helix-chooser}',
+  ':redraw',
+]
