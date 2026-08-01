@@ -3,6 +3,7 @@
 # after files are placed). Idempotent -- safe to re-run.
 set -euo pipefail
 
+{{ if eq .chezmoi.os "darwin" -}}
 echo "==> Homebrew"
 if ! command -v brew >/dev/null 2>&1; then
   /bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)"
@@ -13,6 +14,15 @@ done
 
 echo "==> CLI tools (brew)"
 brew install tmux fzf zoxide sesh yazi fd bat helix spaceship mise modem-dev/tap/hunk
+{{ else -}}
+# Linux (e.g. Workhelix devbox, Graviton): Homebrew doesn't support arm64
+# Linux, and the devbox user has no Unix password so sudo-prompting installers
+# hang forever. mise covers everything brew provided except hunk (brew-tap
+# only) and spaceship (sourced by zshrc only if present).
+echo "==> CLI tools (mise)"
+command -v tmux >/dev/null 2>&1 || sudo apt-get install -y tmux
+mise use -g fzf zoxide bat fd yazi helix aqua:joshmedeski/sesh
+{{ end -}}
 
 echo "==> tmux plugin manager (tpm)"
 [ -d "$HOME/.config/tmux/plugins/tpm" ] || \
@@ -25,6 +35,7 @@ mise use -g \
   npm:typescript-language-server \
   npm:vscode-langservers-extracted
 
+{{ if eq .chezmoi.os "darwin" -}}
 echo "==> git: hunk as the diff pager"
 git config --global core.pager "hunk pager"
 
@@ -41,6 +52,7 @@ ollama create ask-tmux -f "$HOME/.config/ollama/ask-tmux.Modelfile"
 {{- else }}
 echo "==> local LLM popup: skipped (ollamaModel = none)"
 {{- end }}
+{{ end -}}
 
 echo
 echo "==> Done. Open tmux and press 'prefix + I' to install tmux plugins."
