@@ -23,7 +23,7 @@ if command -v wt >/dev/null 2>&1; then eval "$(command wt config shell init zsh)
 # Interactive-shell completions: must run after compinit (above), so they live
 # here in .zshrc, not .zprofile (.zprofile is sourced before .zshrc on login
 # shells, before compdef exists).
-eval "$(git-spice shell completion zsh)"
+command -v git-spice >/dev/null 2>&1 && eval "$(git-spice shell completion zsh)"
 eval "$(zoxide init zsh)"
 
 # fzf: key bindings (Ctrl-T files, Ctrl-R history, Alt-C cd) + completion.
