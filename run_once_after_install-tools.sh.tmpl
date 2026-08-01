@@ -20,7 +20,8 @@ brew install tmux fzf zoxide sesh yazi fd bat helix spaceship mise modem-dev/tap
 # hang forever. mise covers everything brew provided except hunk (brew-tap
 # only) and spaceship (sourced by zshrc only if present).
 echo "==> CLI tools (mise)"
-command -v tmux >/dev/null 2>&1 || sudo apt-get install -y tmux
+sudo apt-get install -y tmux zsh zsh-autosuggestions
+[ "$(basename "$SHELL")" = zsh ] || sudo chsh -s "$(command -v zsh)" "$USER"
 mise use -g fzf zoxide bat fd yazi helix aqua:joshmedeski/sesh
 {{ end -}}
 
