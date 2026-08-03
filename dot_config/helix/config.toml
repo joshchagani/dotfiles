@@ -1,6 +1,9 @@
 theme = "catppuccin_macchiato"
 
 [editor]
+# SSH doesn't forward COLORTERM, so Helix falls back to washed-out 256-color
+# on remote boxes (devbox) unless truecolor is forced. Harmless locally.
+true-color = true
 line-number = "relative"
 bufferline = "always"   # tab bar of open buffers, always visible
 
