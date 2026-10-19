@@ -3,4 +3,4 @@
 # workspace layout: an "editor" window (helix | yazi / shell) and a "claude"
 # window. Sessions are named after the directory automatically.
 [default_session]
-startup_command = "{{ .chezmoi.homeDir }}/.config/sesh/layout.sh"
+startup_command = "/Users/josh/.config/sesh/layout.sh"

@@ -9,6 +9,7 @@ set -g set-clipboard on               # let programs set the system clipboard
 setw -g mode-keys vi                  # vi keys in copy mode
 set -g focus-events on                # Helix gets focus in/out events
 set -g repeat-time 750                # ms window to repeat -r keys (prefix, then h h l...)
+set -g detach-on-destroy off          # killing the attached session (e.g. ^d in the T picker) switches to another session instead of ejecting you out of tmux
 
 # True color + correct $TERM so Helix's theme renders correctly inside tmux
 set -g default-terminal "tmux-256color"

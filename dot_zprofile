@@ -1,1 +1,5 @@
 export PATH="$HOME/.local/share/mise/shims:$PATH"
+
+# hr: attach to the herdr session on the devbox (SSH thin client).
+# macOS-only -- run from the laptop; on the devbox itself you'd just run `herdr`.
+[[ "$OSTYPE" == darwin* ]] && alias hr='herdr --remote devbox'
