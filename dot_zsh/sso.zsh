@@ -5,7 +5,8 @@ sso() {
   elif (( $# > 1 )); then
     echo "usage: sso [prod-customer | stg-customer | profile]" >&2; return 1
   elif [[ $1 =~ ^(prod|stg)-(.+)$ ]]; then
-    profile="wh-${match[1]}-${match[2]}-owner"
+    profile=$(aws configure list-profiles | grep -E -- "^[^-]+-${match[1]}-${match[2]}-owner$" | head -1)
+    [[ -z $profile ]] && { echo "sso: no profile matches $1" >&2; return 1; }
   else
     profile="$1"   # passthrough
   fi
@@ -28,7 +29,8 @@ sso() {
 
 _sso() {
   local -a targets
-  targets=( ${(f)"$(aws configure list-profiles 2>/dev/null | sed -E 's/^wh-(stg|prod)-(.+)-owner$/\1-\2/')"} )
+  targets=( ${(f)"$(aws configure list-profiles 2>/dev/null | sed -E 's/^[^-]+-(stg|prod)-(.+)-owner$/\1-\2/')"} )
   _describe 'profile' targets
 }
 (( $+functions[compdef] )) && compdef _sso sso
+
